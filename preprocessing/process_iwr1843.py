@@ -1,9 +1,10 @@
+import os
+import sys
 import json
 import numpy as np
+from tqdm import tqdm
 from PIL import Image
 from plot_utils import PlotMaps, PlotHeatmaps
-
-
 
 class RadarObject():
     def __init__(self):
@@ -35,15 +36,18 @@ class RadarObject():
 
     def initialize(self, numGroup):
         for i in range(1, numGroup + 1):
-            radarDataFileName = ['raw_data/' + self.sensorType + '/' + self.root + '/single_' + str(i) + '/hori', 
-                                 'raw_data/' + self.sensorType + '/' + self.root + '/single_' + str(i) + '/vert']
-            saveDirName = '../data/' + self.saveRoot + '/single_' + str(i)
-            rgbFileName = 'frames/' + self.root + '/single_' + str(i) + '/processed/images'
+            radarDataFileName = ['/Volumes/Untitled/Dataset/HuPR/radar/single_' + str(i) + '/hori', 
+                                 '/Volumes/Untitled/Dataset/HuPR/radar/single_' + str(i) + '/vert']
+            saveDirName = '/Volumes/Untitled/Dataset/HuPR/data/single_' + str(i)
+            rgbFileName = '/Volumes/Untitled/Dataset/HuPR/frames/single_' + str(i) + '/processed/images'
             #jointsFileName = '../data/' + self.saveRoot + '/single_' + str(i) + '/annot/hrnet_annot.json'
             self.radarDataFileNameGroup.append(radarDataFileName)
             self.saveDirNameGroup.append(saveDirName)
             self.rgbFileNameGroup.append(rgbFileName)
             #self.jointsFileNameGroup.append(jointsFileName)
+        # print(f"self.radarDataFileNameGroup: {self.radarDataFileNameGroup}")
+        # print(f"self.saveDirNameGroup: {self.saveDirNameGroup}")
+        # print(f"self.rgbFileNameGroup: {self.rgbFileNameGroup}")
     
     def postProcessFFT3D(self, dataFFT):
         dataFFT = np.fft.fftshift(dataFFT, axes=(0, 1,))
@@ -178,6 +182,8 @@ class RadarObject():
         idxFrame, output, img, heatmap, output2)
     
     def saveRadarData(self, matrix, dirName, idxFrame):
+        if not os.path.exists(dirName):
+            os.makedirs(dirName)
         dirSave = dirName + ('/%09d' % idxFrame) + '.npy'
         np.save(dirSave, matrix)
 
